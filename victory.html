@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>You Won!</title>
+    <style>
+      body {
+        text-align: center;
+        background: #c8e6c9;
+        padding: 60px;
+        font-family: sans-serif;
+      }
+      h1 {
+        color: #2e8b57;
+        font-size: 3rem;
+        animation: pop 1s infinite alternate;
+      }
+      @keyframes pop {
+        from {
+          transform: scale(1);
+        }
+        to {
+          transform: scale(1.1);
+        }
+      }
+      #score {
+        font-size: 1.5rem;
+        color: #333;
+        margin-top: 20px;
+      }
+      a {
+        display: block;
+        margin-top: 30px;
+        color: #2e8b57;
+        text-decoration: none;
+        font-weight: bold;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>🎉 Congratulations! You Won!</h1>
+    <p id="score"></p>
+    <p>Your brain deserves a medal! 🧠🏅</p>
+    <a href="game.html">Play Again</a>
+    <a href="home.html">Back Home</a>
+    <script>
+      const score = localStorage.getItem("lastScore") || 0;
+      document.getElementById("score").textContent =
+        "Your Final Score: " + score;
+    </script>
+  </body>
+</html>

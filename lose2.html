@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Game Over - Color Memory</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: sans-serif;
+        background: #ffe4e1;
+        text-align: center;
+      }
+      h1 {
+        color: #b22222;
+        margin-top: 20px;
+        font-size: 2rem;
+      }
+      p {
+        font-size: 1.2rem;
+        margin: 15px;
+      }
+      a {
+        display: inline-block;
+        padding: 5px 10px;
+        margin: 10px auto;
+        text-decoration: none;
+        font-weight: bold;
+        color: #fff;
+        background: #ff4500;
+        border-radius: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>💀 Game Over!</h1>
+    <p id="summary"></p>
+    <a href="game2.html">🎮 Play Again</a>
+    <a href="welcome.html">🏠 Back to Welcome</a>
+    <a href="score2.html">📊 View Scores</a>
+
+    <script>
+      let hits = localStorage.getItem("lastHits") || 0;
+      let misses = localStorage.getItem("lastMisses") || 3;
+      document.getElementById(
+        "summary"
+      ).textContent = `You reached Round ${hits} with ${misses} mistake(s).`;
+    </script>
+  </body>
+</html>

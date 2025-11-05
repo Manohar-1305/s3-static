@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reaction Time Tester</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: sans-serif;
+        background: #f0f8ff;
+        text-align: center;
+      }
+      h1 {
+        color: #ff4500;
+        font-size: 1.5rem;
+        margin-top: 10px;
+      }
+      #gameArea {
+        width: 300px;
+        height: 300px;
+        margin: 20px auto;
+        position: relative;
+        border: 2px solid #333;
+        background: #fff;
+        overflow: hidden;
+        border-radius: 10px;
+      }
+      #shape {
+        width: 50px;
+        height: 50px;
+        background: #ff5722;
+        position: absolute;
+        top: 0;
+        left: 0;
+        display: none;
+        border-radius: 8px;
+        cursor: pointer;
+      }
+      #score,
+      #bestTime,
+      #misses,
+      #timeLeft,
+      #hits {
+        font-size: 1rem;
+        margin: 5px;
+      }
+      a {
+        display: inline-block;
+        padding: 5px 10px;
+        margin: 10px auto;
+        text-decoration: none;
+        font-weight: bold;
+        color: #fff;
+        background: #ff4500;
+        border-radius: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Reaction Time Tester</h1>
+    <p id="score">Reaction Time: -- ms</p>
+    <p id="bestTime">Best Time: -- ms</p>
+    <p id="hits">Hits: 0</p>
+    <p id="misses">Misses: 0 / 3</p>
+    <p id="timeLeft">Time left: 2 s</p>
+    <div id="gameArea">
+      <div id="shape"></div>
+    </div>
+    <a href="welcome.html">🏠 Back to Welcome</a>
+    <a href="scores.html">📊 View Scores</a>
+
+    <script>
+      let shape = document.getElementById("shape");
+      let scoreDisplay = document.getElementById("score");
+      let bestDisplay = document.getElementById("bestTime");
+      let hitsDisplay = document.getElementById("hits");
+      let missesDisplay = document.getElementById("misses");
+      let timeLeftDisplay = document.getElementById("timeLeft");
+
+      let startTime;
+      let bestTime = localStorage.getItem("bestReaction")
+        ? parseInt(localStorage.getItem("bestReaction"))
+        : null;
+      let scores = localStorage.getItem("reactionScores")
+        ? JSON.parse(localStorage.getItem("reactionScores"))
+        : [];
+      let misses = 0;
+      let hits = 0;
+      let timeLimit = 2000; // 2 seconds per shape
+      let timer;
+
+      if (bestTime) bestDisplay.textContent = "Best Time: " + bestTime + " ms";
+
+      function makeShapeAppear() {
+        clearInterval(timer);
+        let top = Math.random() * 250;
+        let left = Math.random() * 250;
+        let colors = ["#ff5722", "#4caf50", "#2196f3", "#ffeb3b", "#9c27b0"];
+        shape.style.top = top + "px";
+        shape.style.left = left + "px";
+        shape.style.background =
+          colors[Math.floor(Math.random() * colors.length)];
+        shape.style.display = "block";
+        startTime = new Date().getTime();
+
+        let remainingTime = timeLimit;
+        timeLeftDisplay.textContent =
+          "Time left: " + (remainingTime / 1000).toFixed(1) + " s";
+        timer = setInterval(() => {
+          remainingTime -= 100;
+          timeLeftDisplay.textContent =
+            "Time left: " + (remainingTime / 1000).toFixed(1) + " s";
+          if (remainingTime <= 0) {
+            clearInterval(timer);
+            misses++;
+            missesDisplay.textContent = "Misses: " + misses + " / 3";
+            if (misses >= 3) {
+              // Save session with reaction, hits, and misses
+              scores.push({
+                reaction: bestTime || 0,
+                hits: hits,
+                misses: misses,
+              });
+              localStorage.setItem("reactionScores", JSON.stringify(scores));
+
+              // Save hits & misses for lose page
+              localStorage.setItem("lastHits", hits);
+              localStorage.setItem("lastMisses", misses);
+
+              window.location.href = "lose.html";
+            } else {
+              shape.style.display = "none";
+              setTimeout(makeShapeAppear, 500);
+            }
+          }
+        }, 100);
+      }
+
+      function appearAfterDelay() {
+        shape.style.display = "none";
+        let delay = Math.random() * 1500 + 500;
+        setTimeout(makeShapeAppear, delay);
+      }
+
+      shape.onclick = function () {
+        clearInterval(timer);
+        let endTime = new Date().getTime();
+        let reactionTime = endTime - startTime;
+        scoreDisplay.textContent = "Reaction Time: " + reactionTime + " ms";
+
+        hits++;
+        hitsDisplay.textContent = "Hits: " + hits;
+
+        if (bestTime === null || reactionTime < bestTime) {
+          bestTime = reactionTime;
+          bestDisplay.textContent = "Best Time: " + bestTime + " ms";
+          localStorage.setItem("bestReaction", bestTime);
+        }
+        appearAfterDelay();
+      };
+
+      appearAfterDelay();
+    </script>
+  </body>
+</html>

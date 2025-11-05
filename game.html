@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Memory Match Game</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg, #ffdee9, #b5fffc);
+        text-align: center;
+        padding: 20px;
+      }
+      h1 {
+        color: #2e8b57;
+      }
+      #game-board {
+        display: grid;
+        grid-template-columns: repeat(4, 100px);
+        gap: 15px;
+        justify-content: center;
+        margin-top: 30px;
+      }
+      .card {
+        width: 100px;
+        height: 100px;
+        background: #2e8b57;
+        color: white;
+        font-size: 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: transform 0.3s;
+      }
+      .card.flipped {
+        background: white;
+        color: #2e8b57;
+        transform: rotateY(180deg);
+      }
+      a {
+        display: block;
+        margin-top: 30px;
+        color: #2e8b57;
+        text-decoration: none;
+      }
+      #status {
+        margin-top: 15px;
+        font-weight: bold;
+        color: #333;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>🧠 Memory Match</h1>
+    <div id="game-board"></div>
+    <p id="score">Score: 0</p>
+    <p id="chances">Chances left: 20</p>
+    <p id="status"></p>
+    <a href="home.html">🏠 Back to Home</a>
+
+    <script>
+      const symbols = ["🍎", "🍌", "🍉", "🐶", "🐱", "🐸", "🎮", "🚗"];
+      let cards = [...symbols, ...symbols];
+      cards.sort(() => 0.5 - Math.random());
+
+      const board = document.getElementById("game-board");
+      let flipped = [],
+        matched = 0,
+        score = 0,
+        chances = 20;
+
+      cards.forEach((sym) => {
+        const card = document.createElement("div");
+        card.classList.add("card");
+        card.dataset.symbol = sym;
+        card.addEventListener("click", () => {
+          if (
+            card.classList.contains("flipped") ||
+            flipped.length === 2 ||
+            chances <= 0
+          )
+            return;
+
+          card.classList.add("flipped");
+          card.textContent = sym;
+          flipped.push(card);
+
+          if (flipped.length === 2) {
+            chances--;
+            document.getElementById("chances").textContent =
+              "Chances left: " + chances;
+
+            if (flipped[0].dataset.symbol === flipped[1].dataset.symbol) {
+              matched += 2;
+              score += 10;
+              flipped = [];
+              document.getElementById("score").textContent = "Score: " + score;
+              document.getElementById("status").textContent = "Nice match! 🎉";
+              if (matched === cards.length) {
+                localStorage.setItem("lastScore", score);
+                window.location.href = "victory.html";
+              }
+            } else {
+              document.getElementById("status").textContent = "No match 😅";
+              setTimeout(() => {
+                flipped.forEach((c) => {
+                  c.classList.remove("flipped");
+                  c.textContent = "";
+                });
+                flipped = [];
+              }, 700);
+            }
+
+            if (chances === 0 && matched < cards.length) {
+              localStorage.setItem("lastScore", score);
+              setTimeout(() => {
+                window.location.href = "defeat.html";
+              }, 800);
+            }
+          }
+        });
+        board.appendChild(card);
+      });
+    </script>
+  </body>
+</html>

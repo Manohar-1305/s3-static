@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Scores - Color Memory</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: sans-serif;
+        background: #f0f8ff;
+        text-align: center;
+      }
+      h1 {
+        color: #4b0082;
+        margin-top: 20px;
+        font-size: 2rem;
+      }
+      table {
+        margin: 20px auto;
+        border-collapse: collapse;
+        width: 90%;
+        max-width: 500px;
+      }
+      th,
+      td {
+        border: 1px solid #333;
+        padding: 8px 12px;
+      }
+      th {
+        background: #4b0082;
+        color: #fff;
+      }
+      td {
+        background: #fff;
+      }
+      a {
+        display: inline-block;
+        padding: 5px 10px;
+        margin: 10px auto;
+        text-decoration: none;
+        font-weight: bold;
+        color: #fff;
+        background: #4b0082;
+        border-radius: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>📊 Color Memory Scores</h1>
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Round Reached</th>
+          <th>Mistakes</th>
+        </tr>
+      </thead>
+      <tbody id="scoreTable"></tbody>
+    </table>
+    <a href="welcome.html">🏠 Back to Welcome</a>
+    <a href="game2.html">🎮 Play Again</a>
+
+    <script>
+      let scores = localStorage.getItem("reactionScores")
+        ? JSON.parse(localStorage.getItem("reactionScores"))
+        : [];
+      const table = document.getElementById("scoreTable");
+      if (scores.length === 0) {
+        table.innerHTML = '<tr><td colspan="3">No scores yet</td></tr>';
+      } else {
+        scores.forEach((s, i) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `<td>${i + 1}</td><td>${s.hits}</td><td>${
+            s.misses
+          }</td>`;
+          table.appendChild(row);
+        });
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Color Placement Memory</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: sans-serif;
+        background: #f0f8ff;
+        text-align: center;
+      }
+      h1 {
+        color: #4b0082;
+        margin-top: 10px;
+        font-size: 1.5rem;
+      }
+      #roundDisplay,
+      #message {
+        margin: 10px;
+        font-size: 1rem;
+      }
+      #gameArea {
+        width: 320px;
+        margin: 20px auto;
+        display: flex;
+        justify-content: space-between;
+      }
+      .box {
+        width: 60px;
+        height: 60px;
+        border-radius: 8px;
+        border: 2px solid #333;
+        display: inline-block;
+      }
+      #colorChoices {
+        width: 320px;
+        margin: 20px auto;
+        display: flex;
+        justify-content: space-between;
+      }
+      .choice {
+        width: 60px;
+        height: 60px;
+        border-radius: 8px;
+        cursor: pointer;
+        border: 2px solid #333;
+      }
+      a {
+        display: inline-block;
+        padding: 5px 10px;
+        margin: 10px auto;
+        text-decoration: none;
+        font-weight: bold;
+        color: #fff;
+        background: #4b0082;
+        border-radius: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Color Placement Memory</h1>
+    <p id="roundDisplay">Round: 0</p>
+    <p id="message">Memorize the sequence!</p>
+    <div id="gameArea"></div>
+    <div id="colorChoices"></div>
+    <a href="welcome.html">🏠 Back to Welcome</a>
+
+    <script>
+      const colors = ["#ff4d4d", "#4caf50", "#2196f3", "#ffeb3b", "#9c27b0"]; // 5 colors
+      let sequence = [];
+      let playerSequence = [];
+      let round = 0;
+      let mistakes = 0;
+      const maxMistakes = 3;
+
+      const gameArea = document.getElementById("gameArea");
+      const colorChoices = document.getElementById("colorChoices");
+      const roundDisplay = document.getElementById("roundDisplay");
+      const message = document.getElementById("message");
+
+      let selectedColor = null;
+
+      function createBoxes(num) {
+        gameArea.innerHTML = "";
+        for (let i = 0; i < num; i++) {
+          const box = document.createElement("div");
+          box.className = "box";
+          box.dataset.index = i;
+          box.addEventListener("click", () => {
+            placeColor(box);
+          });
+          gameArea.appendChild(box);
+        }
+      }
+
+      function createColorChoices() {
+        colorChoices.innerHTML = "";
+        colors.forEach((c) => {
+          const ch = document.createElement("div");
+          ch.className = "choice";
+          ch.style.background = c;
+          ch.dataset.color = c;
+          ch.addEventListener("click", () => {
+            selectedColor = c;
+          });
+          colorChoices.appendChild(ch);
+        });
+      }
+
+      function placeColor(box) {
+        if (selectedColor) {
+          box.style.background = selectedColor;
+          playerSequence[box.dataset.index] = selectedColor;
+          checkSequence();
+        }
+      }
+
+      function showSequence() {
+        message.textContent = "Memorize the sequence!";
+        const boxes = gameArea.children;
+        for (let i = 0; i < sequence.length; i++) {
+          boxes[i].style.background = sequence[i];
+        }
+        setTimeout(() => {
+          for (let i = 0; i < sequence.length; i++) {
+            boxes[i].style.background = "";
+          }
+          message.textContent = "Recreate the sequence!";
+        }, 2000);
+      }
+
+      function nextRound() {
+        playerSequence = [];
+        sequence = [];
+        round++;
+        roundDisplay.textContent = "Round: " + round;
+        // Generate 5-color sequence randomly
+        for (let i = 0; i < 5; i++) {
+          sequence.push(colors[Math.floor(Math.random() * colors.length)]);
+        }
+        createBoxes(sequence.length);
+        createColorChoices();
+        showSequence();
+      }
+
+      function checkSequence() {
+        if (playerSequence.filter((c) => c).length === sequence.length) {
+          for (let i = 0; i < sequence.length; i++) {
+            if (playerSequence[i] !== sequence[i]) {
+              mistakes++;
+              if (mistakes >= maxMistakes) {
+                localStorage.setItem("lastHits", round - 1);
+                localStorage.setItem("lastMisses", mistakes);
+                window.location.href = "lose2.html";
+                return;
+              } else {
+                alert(
+                  "Wrong sequence! Mistakes: " + mistakes + "/" + maxMistakes
+                );
+                nextRound();
+                return;
+              }
+            }
+          }
+          alert("Correct sequence! Next round!");
+          setTimeout(nextRound, 500);
+        }
+      }
+
+      // Start the first round
+      nextRound();
+    </script>
+  </body>
+</html>

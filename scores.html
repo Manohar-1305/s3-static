@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reaction Scores</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: sans-serif;
+        background: #f0f8ff;
+        text-align: center;
+      }
+      h1 {
+        color: #ff4500;
+        margin-top: 20px;
+      }
+      ul {
+        list-style: none;
+        padding: 0;
+        max-width: 400px;
+        margin: 20px auto;
+      }
+      li {
+        margin: 8px 0;
+        font-size: 1.1rem;
+        background: #fff;
+        padding: 8px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+      }
+      a {
+        display: inline-block;
+        padding: 5px 10px;
+        margin: 10px auto;
+        text-decoration: none;
+        font-weight: bold;
+        color: #fff;
+        background: #ff4500;
+        border-radius: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Reaction Scores</h1>
+    <ul id="scoreList"></ul>
+    <a href="game3.html">🎮 Play Again</a>
+    <a href="welcome.html">🏠 Back to Welcome</a>
+
+    <script>
+      // Fetch scores from localStorage
+      let scores = localStorage.getItem("reactionScores")
+        ? JSON.parse(localStorage.getItem("reactionScores"))
+        : [];
+      let ul = document.getElementById("scoreList");
+
+      if (scores.length === 0) {
+        ul.innerHTML = "<li>No scores yet.</li>";
+      } else {
+        // Sort by best reaction time (ascending)
+        scores.sort((a, b) => (a.reaction || 0) - (b.reaction || 0));
+
+        scores.forEach((s, i) => {
+          // Default to 0 if any property is missing
+          let reaction = s.reaction !== undefined ? s.reaction : 0;
+          let hits = s.hits !== undefined ? s.hits : 0;
+          let misses = s.misses !== undefined ? s.misses : 0;
+
+          let li = document.createElement("li");
+          li.textContent = `#${
+            i + 1
+          }: Reaction ${reaction} ms | Hits ${hits} | Misses ${misses}`;
+          ul.appendChild(li);
+        });
+      }
+    </script>
+  </body>
+</html>
